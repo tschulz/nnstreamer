@@ -96,6 +96,31 @@ static_library('nnstreamer_decoder_pose_estimation',
   install_dir: nnstreamer_libdir
 )
 
+# blazepose estimation
+decoder_sub_blazepose_estimation_sources = [
+  'tensordec-blazepose.c',
+  'tensordecutil.c',
+  'tensordec-font.c'
+]
+
+nnstreamer_decoder_blazepose_estimation_sources = []
+foreach s : decoder_sub_blazepose_estimation_sources
+  nnstreamer_decoder_blazepose_estimation_sources += join_paths(meson.current_source_dir(), s)
+endforeach
+
+shared_library('nnstreamer_decoder_blazepose_estimation',
+  nnstreamer_decoder_blazepose_estimation_sources,
+  dependencies: [nnstreamer_dep, glib_dep, gst_dep],
+  install: true,
+  install_dir: decoder_subplugin_install_dir
+)
+static_library('nnstreamer_decoder_blazepose_estimation',
+  nnstreamer_decoder_blazepose_estimation_sources,
+  dependencies: [nnstreamer_dep, glib_dep, gst_dep],
+  install: true,
+  install_dir: nnstreamer_libdir
+)
+
 # image segmentation
 decoder_sub_image_segment_sources = [
   'tensordec-imagesegment.c',
