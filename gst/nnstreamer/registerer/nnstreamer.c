@@ -50,6 +50,7 @@
 #include <elements/gsttensor_aggregator.h>
 #include <elements/gsttensor_converter.h>
 #include <elements/gsttensor_crop.h>
+#include <elements/gsttensor_debug.h>
 #include <elements/gsttensor_decoder.h>
 #include <elements/gsttensor_demux.h>
 #include <elements/gsttensor_if.h>
@@ -64,9 +65,9 @@
 #include <elements/gsttensor_split.h>
 #include <elements/gsttensor_transform.h>
 
-#if defined(__gnu_linux__) && !defined(__ANDROID__)
+#ifdef _ENABLE_SRC_IIO
 #include <elements/gsttensor_srciio.h>
-#endif /* __gnu_linux__ && !__ANDROID__ */
+#endif
 
 #include <tensor_filter/tensor_filter.h>
 #if defined(ENABLE_NNSTREAMER_EDGE)
@@ -92,6 +93,7 @@ gst_nnstreamer_init (GstPlugin * plugin)
   NNSTREAMER_INIT (plugin, aggregator, AGGREGATOR);
   NNSTREAMER_INIT (plugin, converter, CONVERTER);
   NNSTREAMER_INIT (plugin, crop, CROP);
+  NNSTREAMER_INIT (plugin, debug, DEBUG);
   NNSTREAMER_INIT (plugin, decoder, DECODER);
   NNSTREAMER_INIT (plugin, demux, DEMUX);
   NNSTREAMER_INIT (plugin, filter, FILTER);
@@ -111,13 +113,9 @@ gst_nnstreamer_init (GstPlugin * plugin)
   NNSTREAMER_INIT (plugin, query_serversink, QUERY_SERVERSINK);
   NNSTREAMER_INIT (plugin, query_client, QUERY_CLIENT);
 #endif
-#if defined(__gnu_linux__) && !defined(__ANDROID__)
-  /* IIO requires Linux / non-Android */
-#if (GST_VERSION_MAJOR == 1) && (GST_VERSION_MINOR >= 8)
-  /* SRC-IIO code uses GST 1.8+ APIs. */
+#ifdef _ENABLE_SRC_IIO
   NNSTREAMER_INIT (plugin, src_iio, SRC_IIO);
 #endif
-#endif /* __gnu_linux__ && !__ANDROID__ */
   return TRUE;
 }
 

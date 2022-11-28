@@ -378,7 +378,7 @@ static void
 record_statistics (GstTensorFilterPrivate * priv)
 {
   gint64 end_time = g_get_real_time ();
-  gint64 *latency = g_new (gint64, 1);
+  gint64 *latency;
   GQueue *recent_latencies = priv->stat.recent_latencies;
 
   /* ignore first measurements that may be off */
@@ -387,6 +387,7 @@ record_statistics (GstTensorFilterPrivate * priv)
     return;
   }
 
+  latency = g_new (gint64, 1);
   *latency = end_time - priv->stat.latest_invoke_time;
   priv->stat.total_invoke_latency += *latency;
   priv->stat.total_invoke_num += 1;
@@ -1104,6 +1105,7 @@ gst_tensor_filter_transform_caps (GstBaseTransform * trans,
   GstTensorsConfig in_config, out_config;
   GstPad *pad;
   GstCaps *result;
+  GstCaps *peer_caps;
   GstStructure *structure;
   gboolean configured = FALSE;
 
@@ -1180,6 +1182,14 @@ gst_tensor_filter_transform_caps (GstBaseTransform * trans,
   } else {
     /* we don't know the exact tensor info yet */
     result = gst_caps_from_string (CAPS_STRING);
+  }
+
+  /* Update caps dimension for src pad cap */
+  if (direction == GST_PAD_SINK) {
+    if ((peer_caps = gst_pad_peer_query_caps (pad, NULL))) {
+      gst_tensor_caps_update_dimension (result, peer_caps);
+      gst_caps_unref (peer_caps);
+    }
   }
 
   if (filter && gst_caps_get_size (filter) > 0) {
